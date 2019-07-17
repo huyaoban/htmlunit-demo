@@ -38,13 +38,13 @@ public class HtmlunitTest1 {
 		webClient.getOptions().setCssEnabled(false);// 是否启用CSS, 因为不需要展现页面, 所以不需要启用
 		webClient.getOptions().setRedirectEnabled(true);
 		webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);// 当HTTP的状态非200时是否抛出异常, 这里选择不需要
-		webClient.getOptions().setTimeout(30 * 1000);
+		webClient.getOptions().setTimeout(28 * 1000);
 		webClient.getOptions().setUseInsecureSSL(true);
 		webClient.getOptions().setSSLInsecureProtocol("TLSv1.2");
 
 		webClient.setRefreshHandler(new ImmediateRefreshHandler());
 		webClient.setAjaxController(new NicelyResynchronizingAjaxController());// 很重要，设置支持AJAX
-		webClient.waitForBackgroundJavaScript(30 * 1000);// 异步JS执行需要耗时,所以这里线程要阻塞30秒,等待异步JS执行结束
+		webClient.waitForBackgroundJavaScript(29 * 1000);// 异步JS执行需要耗时,所以这里线程要阻塞30秒,等待异步JS执行结束
 		webClient.setJavaScriptTimeout(30 * 1000);
 
 		return webClient;
@@ -89,8 +89,25 @@ public class HtmlunitTest1 {
 		kw.type("htmlunit");
 		HtmlPage resultPage = submit.click();
 		
-		HtmlElement contentLeft = (HtmlElement)resultPage.getElementById("content_left");
-		
-		contentLeft.querySelectorAll("div.c-container");
+
+		int i = 10;
+		do {
+			parseResult(resultPage.asXml());
+			HtmlElement pages = resultPage.getHtmlElementById("page");
+			HtmlElement next = (HtmlElement) pages.getLastElementChild();
+			resultPage = next.click();
+			i--;
+		} while (i > 0);
+	}
+
+	private void parseResult(String resultXml) {
+		Document doc = Jsoup.parse(resultXml);
+		Element contentLeft = doc.getElementById("content_left");
+		Elements divs = contentLeft.select("div.c-container");
+		for (Element div : divs) {
+			Element h3 = div.selectFirst("h3.t");
+			String title = h3.text();
+			log.info("{}", title);
+		}
 	}
 }

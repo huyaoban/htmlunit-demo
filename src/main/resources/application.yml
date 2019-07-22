@@ -1,0 +1,7 @@
+spring:
+    rabbitmq:
+        host: 10.20.0.238
+        port: 5672
+        username: admin
+        password: CSrabMQ
+        virtual-host: /

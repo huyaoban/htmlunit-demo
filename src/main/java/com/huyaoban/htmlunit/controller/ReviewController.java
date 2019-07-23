@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.huyaoban.htmlunit.config.RabbitmqConfiguration;
-import com.huyaoban.htmlunit.model.AsinReviewInfo;
+import com.huyaoban.htmlunit.model.AsinInfo;
 import com.huyaoban.htmlunit.model.ReviewInfo;
 
 import io.swagger.annotations.Api;
@@ -21,17 +21,24 @@ public class ReviewController {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
-	@PostMapping("/capture-review")
-	@ApiOperation(value = "抓取ASIN的review")
-	public void captureReviewForAsin(@RequestBody AsinReviewInfo asinReviewInfo) {
-		rabbitTemplate.convertAndSend(RabbitmqConfiguration.REVIEW_EXCHANGE,
-				RabbitmqConfiguration.REVIEW_ASIN_INFO_QUEUE_ROUTING_KEY, asinReviewInfo);
-	}
-
 	@PostMapping("/capture-single-review")
 	@ApiOperation(value = "抓取单个review")
 	public void captureSingleReview(@RequestBody ReviewInfo reviewInfo) {
 		rabbitTemplate.convertAndSend(RabbitmqConfiguration.REVIEW_EXCHANGE,
-				RabbitmqConfiguration.REVIEW_SINGLE_QUEUE_ROUTING_KEY, reviewInfo);
+				RabbitmqConfiguration.REVIEW_INFO_QUEUE_KEY, reviewInfo);
+	}
+
+	@PostMapping("/capture-asin-reviews")
+	@ApiOperation(value = "抓取ASIN的review")
+	public void captureReviewForAsin(@RequestBody AsinInfo asinInfo) {
+		rabbitTemplate.convertAndSend(RabbitmqConfiguration.REVIEW_EXCHANGE,
+				RabbitmqConfiguration.ASIN_INFO_QUEUE_KEY, asinInfo);
+	}
+
+	@PostMapping("/check-review-status")
+	@ApiOperation(value = "检查review是否删除")
+	public void checkReviewStatus(@RequestBody ReviewInfo reviewInfo) {
+		rabbitTemplate.convertAndSend(RabbitmqConfiguration.REVIEW_EXCHANGE,
+				RabbitmqConfiguration.REVIEW_INFO_CHECK_DELETE_QUEUE_KEY, reviewInfo);
 	}
 }

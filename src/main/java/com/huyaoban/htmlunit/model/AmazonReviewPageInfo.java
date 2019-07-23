@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AmazonReviewPageInfo {
 	private String asin;
+	
+	private String countryCode;
 
 	private Integer pageNo;
 

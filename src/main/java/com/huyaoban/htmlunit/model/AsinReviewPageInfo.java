@@ -7,13 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewInfo {
-	private String reviewId;
-
+public class AsinReviewPageInfo {
 	private String asin;
 
 	private String countryCode;
 
-	private String reviewLink;
+	private Integer pageNo;
 
+	private String reviewPageLink;
 }

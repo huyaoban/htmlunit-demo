@@ -15,12 +15,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitmqConfiguration {
 	public static final String REVIEW_EXCHANGE = "review.exchange";
-	public static final String REVIEW_ASIN_INFO_QUEUE = "review.asin.info.queue";
-	public static final String REVIEW_PAGE_INFO_QUEUE = "review.page.info.queue";
-	public static final String REVIEW_SINGLE_QUEUE = "review.single.queue";
-	public static final String REVIEW_ASIN_INFO_QUEUE_ROUTING_KEY = "review.asin.info.queue.key";
-	public static final String REVIEW_PAGE_INFO_QUEUE_ROUTING_KEY = "review.page.info.queue.key";
-	public static final String REVIEW_SINGLE_QUEUE_ROUTING_KEY = "review.single.queue.key";
+
+	public static final String ASIN_INFO_QUEUE = "asin.info.queue";
+	public static final String ASIN_REVIEW_PAGE_INFO_QUEUE = "asin.review.page.info.queue";
+	public static final String REVIEW_INFO_QUEUE = "review.info.queue";
+	public static final String REVIEW_INFO_CHECK_DELETE_QUEUE = "review.info.check.delete.queue";
+
+	public static final String ASIN_INFO_QUEUE_KEY = "asin.info.queue.key";
+	public static final String ASIN_REVIEW_PAGE_INFO_QUEUE_KEY = "asin.review.page.info.queue.key";
+	public static final String REVIEW_INFO_QUEUE_KEY = "review.info.queue.key";
+	public static final String REVIEW_INFO_CHECK_DELETE_QUEUE_KEY = "review.info.check.delete.queue.key";
 
     @Bean("rabbitTemplate")
     public RabbitTemplate rabbitTemplate(ConnectionFactory cf) {
@@ -43,25 +47,37 @@ public class RabbitmqConfiguration {
 		return factory;
 	}
 
-	@Bean("reviewPageContainerFactory")
-	public SimpleRabbitListenerContainerFactory reviewPageContainerFactory(
+	@Bean("asinReviewPageInfoContainerFactory")
+	public SimpleRabbitListenerContainerFactory asinReviewPageInfoContainerFactory(
             SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory cf) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         configurer.configure(factory, cf);
-		factory.setConcurrentConsumers(3);
-		factory.setMaxConcurrentConsumers(5);
+		factory.setConcurrentConsumers(10);
+		factory.setMaxConcurrentConsumers(25);
         factory.setMessageConverter(new Jackson2JsonMessageConverter());
         factory.setPrefetchCount(1);
         return factory;
     }
 
-	@Bean("singleReviewContainerFactory")
-	public SimpleRabbitListenerContainerFactory singleReviewContainerFactory(
+	@Bean("reviewInfoContainerFactory")
+	public SimpleRabbitListenerContainerFactory reviewInfoContainerFactory(
 			SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory cf) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		configurer.configure(factory, cf);
-		factory.setConcurrentConsumers(3);
-		factory.setMaxConcurrentConsumers(5);
+		factory.setConcurrentConsumers(5);
+		factory.setMaxConcurrentConsumers(10);
+		factory.setMessageConverter(new Jackson2JsonMessageConverter());
+		factory.setPrefetchCount(1);
+		return factory;
+	}
+
+	@Bean("reviewInfoCheckDeleteContainerFactory")
+	public SimpleRabbitListenerContainerFactory reviewInfoCheckDeleteContainerFactory(
+			SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory cf) {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		configurer.configure(factory, cf);
+		factory.setConcurrentConsumers(5);
+		factory.setMaxConcurrentConsumers(10);
 		factory.setMessageConverter(new Jackson2JsonMessageConverter());
 		factory.setPrefetchCount(1);
 		return factory;
@@ -73,32 +89,44 @@ public class RabbitmqConfiguration {
     }
 
 	@Bean
-	public Queue reviewAsinInfoQueue() {
-		return new Queue(REVIEW_ASIN_INFO_QUEUE);
+	public Queue asinInfoQueue() {
+		return new Queue(ASIN_INFO_QUEUE);
 	}
 
     @Bean
-	public Queue reviewPageInfoQueue() {
-		return new Queue(REVIEW_PAGE_INFO_QUEUE);
+	public Queue asinReviewPageInfoQueue() {
+		return new Queue(ASIN_REVIEW_PAGE_INFO_QUEUE);
     }
 
 	@Bean
-	public Queue singleReviewInfoQueue() {
-		return new Queue(REVIEW_SINGLE_QUEUE);
+	public Queue reviewInfoQueue() {
+		return new Queue(REVIEW_INFO_QUEUE);
 	}
 
 	@Bean
-	public Binding reviewAsinInfoQueueBinding() {
-		return BindingBuilder.bind(reviewAsinInfoQueue()).to(reviewExchange()).with(REVIEW_ASIN_INFO_QUEUE_ROUTING_KEY);
+	public Queue reviewInfoCheckDeleteQueue() {
+		return new Queue(REVIEW_INFO_CHECK_DELETE_QUEUE);
+	}
+
+	@Bean
+	public Binding asinInfoQueueBinding() {
+		return BindingBuilder.bind(asinInfoQueue()).to(reviewExchange()).with(ASIN_INFO_QUEUE_KEY);
 	}
 
     @Bean
-	public Binding reviewPageInfoQueueBinding() {
-		return BindingBuilder.bind(reviewPageInfoQueue()).to(reviewExchange()).with(REVIEW_PAGE_INFO_QUEUE_ROUTING_KEY);
+	public Binding asinReviewPageInfoQueueBinding() {
+		return BindingBuilder.bind(asinReviewPageInfoQueue()).to(reviewExchange())
+				.with(ASIN_REVIEW_PAGE_INFO_QUEUE_KEY);
     }
 
 	@Bean
-	public Binding singleReviewInfoQueueBinding() {
-		return BindingBuilder.bind(singleReviewInfoQueue()).to(reviewExchange()).with(REVIEW_SINGLE_QUEUE_ROUTING_KEY);
+	public Binding reviewInfoQueueBinding() {
+		return BindingBuilder.bind(reviewInfoQueue()).to(reviewExchange()).with(REVIEW_INFO_QUEUE_KEY);
+	}
+
+	@Bean
+	public Binding reviewInfoCheckDeleteQueueBinding() {
+		return BindingBuilder.bind(reviewInfoCheckDeleteQueue()).to(reviewExchange())
+				.with(REVIEW_INFO_CHECK_DELETE_QUEUE_KEY);
 	}
 }

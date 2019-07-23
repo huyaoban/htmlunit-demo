@@ -7,8 +7,11 @@ import com.google.common.base.Splitter;
 import com.huyaoban.htmlunit.model.AmazonReview;
 import com.huyaoban.htmlunit.service.AmazonReviewParseService;
 
-@Service
-public class AmazonReviewParseServiceImpl implements AmazonReviewParseService {
+import lombok.extern.slf4j.Slf4j;
+
+@Service("defaultAmazonReviewParseService")
+@Slf4j
+public class DefaultAmazonReviewParseServiceImpl implements AmazonReviewParseService {
 
 	@Override
 	public AmazonReview parseReviewInfo(String asin, Element reviewInfoDiv) {
@@ -24,56 +27,68 @@ public class AmazonReviewParseServiceImpl implements AmazonReviewParseService {
 		return builder.build();
 	}
 
-	protected String parseAmazonReviewId(Element reviewInfoDiv) {
+	@Override
+	public String parseAmazonReviewId(Element reviewInfoDiv) {
 		return reviewInfoDiv.attr("id");
 	}
 
-	protected String parseCustomerName(Element reviewInfoDiv) {
+	@Override
+	public String parseCustomerName(Element reviewInfoDiv) {
 		Element customerName = reviewInfoDiv.getElementsByClass("a-profile-name").first();
 		return customerName.text();
 	}
 
-	protected String parseCustomerProfileLink(Element reviewInfoDiv) {
+	@Override
+	public String parseCustomerProfileLink(Element reviewInfoDiv) {
 		Element profile = reviewInfoDiv.selectFirst("a[class=a-profile]");
 		return profile.attr("abs:href");
 	}
 
-	protected String parseCurrentStar(Element reviewInfoDiv) {
+	@Override
+	public String parseCurrentStar(Element reviewInfoDiv) {
 		Element currentStar = reviewInfoDiv.getElementsByClass("review-rating").first();
 		return currentStar.text();
 	}
 
-	protected String parseTitle(Element reviewInfoDiv) {
+	@Override
+	public String parseTitle(Element reviewInfoDiv) {
 		Element title = reviewInfoDiv.selectFirst("a.review-title-content");
 		return title.text();
 	}
 
-	protected String parseReviewDate(Element reviewInfoDiv) {
+	@Override
+	public String parseReviewDate(Element reviewInfoDiv) {
 		Element reviewDate = reviewInfoDiv.selectFirst("span.review-date");
 		return reviewDate.text();
 	}
 
-	protected Boolean parseVerifiedPurchase(Element reviewInfoDiv) {
+	@Override
+	public Boolean parseVerifiedPurchase(Element reviewInfoDiv) {
 		Element verifiedPurchase = reviewInfoDiv
 				.getElementsByAttributeValueContaining("data-reviews-state-param", "avp_only_reviews").first();
 		return verifiedPurchase == null ? Boolean.FALSE : Boolean.TRUE;
 	}
 
-	protected String parseContent(Element reviewInfoDiv) {
+	@Override
+	public String parseContent(Element reviewInfoDiv) {
 		Element content = reviewInfoDiv.selectFirst("span.review-text-content");
 		return content.text();
 	}
 
-	protected String parseContentHtml(Element reviewInfoDiv) {
+	@Override
+	public String parseContentHtml(Element reviewInfoDiv) {
 		Element content = reviewInfoDiv.selectFirst("span.review-text-content");
 		return content.html();
 	}
 
-	protected Integer parseHelpfulVotes(Element reviewInfoDiv) {
+	@Override
+	public Integer parseHelpfulVotes(Element reviewInfoDiv) {
 		Element helpfulVotes = reviewInfoDiv.selectFirst("span.cr-vote-text");
 		if (helpfulVotes == null) {
 			return 0;
 		}
+
+		log.info("parse helpful votes for review {}", reviewInfoDiv.attr("id"));
 
 		String votesStr = helpfulVotes.text();
 		String votes = Splitter.on(" ").trimResults().omitEmptyStrings().splitToList(votesStr).get(0);
@@ -84,7 +99,8 @@ public class AmazonReviewParseServiceImpl implements AmazonReviewParseService {
 		}
 	}
 
-	protected String parseReviewLink(Element reviewInfoDiv) {
+	@Override
+	public String parseReviewLink(Element reviewInfoDiv) {
 		Element title = reviewInfoDiv.selectFirst("a.review-title-content");
 		return title.attr("abs:href");
 	}

@@ -1,16 +1,17 @@
 package com.huyaoban.htmlunit.service;
 
-import com.huyaoban.htmlunit.model.AmazonReviewPageInfo;
-import com.huyaoban.htmlunit.model.AsinReviewInfo;
+import com.huyaoban.htmlunit.model.AsinInfo;
+import com.huyaoban.htmlunit.model.AsinReviewPageInfo;
 import com.huyaoban.htmlunit.model.ReviewInfo;
 
 public interface AmazonReviewCaptureService {
-	void captureAmazonReview(String asin) throws Exception;
 
-	void captureAmazonReview(AmazonReviewPageInfo reviewPageInfo) throws Exception;
+	void captureReviewForAsin(AsinInfo asinInfo) throws Exception;
 
-	void captureAmazonReviewPageInfo(AsinReviewInfo asinReviewInfo) throws Exception;
+	void captureReviewByPage(AsinReviewPageInfo asinReviewPageInfo) throws Exception;
 
 	void captureSingleReview(ReviewInfo reviewInfo) throws Exception;
+
+	void checkReviewStatus(ReviewInfo reviewInfo) throws Exception;
 
 }

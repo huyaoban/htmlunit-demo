@@ -1,13 +1,21 @@
 package com.huyaoban.htmlunit.service.impl;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
 @Service("jpAmazonReviewParseService")
 public class JpAmazonReviewParseServiceImpl extends DefaultAmazonReviewParseServiceImpl {
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// 2018年3月3日
+		dateTimeFormatter = DateTimeFormat.forPattern("yyyy年MM月dd日").withLocale(Locale.JAPAN);
+	}
 
 	@Override
 	public Integer parseHelpfulVotes(Element reviewInfoDiv) {

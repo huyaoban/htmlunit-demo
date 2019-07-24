@@ -1,5 +1,8 @@
 package com.huyaoban.htmlunit.service.impl;
 
+import java.util.Locale;
+
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service("frAmazonReviewParseService")
 @Slf4j
 public class FrAmazonReviewParseServiceImpl extends DefaultAmazonReviewParseServiceImpl {
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// 2 octobre 2018
+		dateTimeFormatter = DateTimeFormat.forPattern("d MMM yyyy").withLocale(Locale.FRANCE);
+	}
 
 	@Override
 	public Integer parseHelpfulVotes(Element reviewInfoDiv) {

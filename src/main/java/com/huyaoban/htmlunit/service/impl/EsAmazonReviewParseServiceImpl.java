@@ -1,5 +1,9 @@
 package com.huyaoban.htmlunit.service.impl;
 
+import java.util.Locale;
+
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service("esAmazonReviewParseService")
 @Slf4j
 public class EsAmazonReviewParseServiceImpl extends DefaultAmazonReviewParseServiceImpl {
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// 12 de enero de 2018
+		dateTimeFormatter = DateTimeFormat.forPattern("d MMM yyyy").withLocale(new Locale("es", "ES"));
+	}
 
 	@Override
 	public Integer parseHelpfulVotes(Element reviewInfoDiv) {
@@ -35,6 +45,15 @@ public class EsAmazonReviewParseServiceImpl extends DefaultAmazonReviewParseServ
 		// 去掉千分位
 		totalReviewCountStr = totalReviewCountStr.replace(".", "");
 		return Integer.valueOf(totalReviewCountStr);
+	}
+
+	@Override
+	public String parseReviewDate(Element reviewInfoDiv) {
+		// 12 de enero de 2018
+		Element reviewDateElement = reviewInfoDiv.selectFirst("span.review-date");
+		LocalDate reviewDate = LocalDate.parse(reviewDateElement.text().replace(" de ", " "), dateTimeFormatter);
+
+		return reviewDate.toString();
 	}
 
 }

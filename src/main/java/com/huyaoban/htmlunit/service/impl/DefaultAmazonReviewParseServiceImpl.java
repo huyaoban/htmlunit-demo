@@ -1,8 +1,13 @@
 package com.huyaoban.htmlunit.service.impl;
 
 import java.util.List;
+import java.util.Locale;
 
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.nodes.Element;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -13,7 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service("defaultAmazonReviewParseService")
 @Slf4j
-public class DefaultAmazonReviewParseServiceImpl implements AmazonReviewParseService {
+public class DefaultAmazonReviewParseServiceImpl implements AmazonReviewParseService, InitializingBean {
+	protected DateTimeFormatter dateTimeFormatter;
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// January 9, 2018
+		dateTimeFormatter = DateTimeFormat.forPattern("MMM d, yyyy").withLocale(Locale.US);
+	}
 
 	@Override
 	public AmazonReview parseReviewInfo(String asin, Element reviewInfoDiv) {
@@ -67,8 +79,10 @@ public class DefaultAmazonReviewParseServiceImpl implements AmazonReviewParseSer
 
 	@Override
 	public String parseReviewDate(Element reviewInfoDiv) {
-		Element reviewDate = reviewInfoDiv.selectFirst("span.review-date");
-		return reviewDate.text();
+		Element reviewDateElement = reviewInfoDiv.selectFirst("span.review-date");
+		LocalDate reviewDate = LocalDate.parse(reviewDateElement.text(), dateTimeFormatter);
+
+		return reviewDate.toString();
 	}
 
 	@Override

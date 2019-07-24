@@ -13,7 +13,6 @@ import com.huyaoban.htmlunit.service.AmazonReviewCaptureService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-
 public class HtmlunitTest2 {
 	@Autowired
 	private AmazonReviewCaptureService amazonReviewCaptureService;

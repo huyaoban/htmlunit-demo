@@ -61,7 +61,7 @@ public class CountryInfoUtil {
 		countryMap.put(fr.getCountryCode(), fr);
 
 		CountryInfo ca = CountryInfo.builder().countryCode("CA").authority("www.amazon.ca").pageSize(20)
-				.reviewParserService("defaultAmazonReviewParseService")
+				.reviewParserService("caAmazonReviewParseService")
 				.baseUrl("https://www.amazon.ca/")
 				.reviewPageLinkTemplate(
 						"https://www.amazon.ca/product-reviews/{0}/ref=cm_cr_getr_d_paging_btm_next_{1}?ie=UTF8&reviewerType=all_reviews&pageNumber={1}&pageSize={2}")
@@ -87,7 +87,7 @@ public class CountryInfoUtil {
 		countryMap.put(es.getCountryCode(), es);
 
 		CountryInfo uk = CountryInfo.builder().countryCode("UK").authority("www.amazon.co.uk").pageSize(20)
-				.reviewParserService("defaultAmazonReviewParseService")
+				.reviewParserService("ukAmazonReviewParseService")
 				.baseUrl("https://www.amazon.co.uk/")
 				.reviewPageLinkTemplate(
 						"https://www.amazon.co.uk/product-reviews/{0}/ref=cm_cr_getr_d_paging_btm_next_{1}?ie=UTF8&reviewerType=all_reviews&pageNumber={1}&pageSize={2}")
@@ -107,12 +107,12 @@ public class CountryInfoUtil {
 				.reviewLinkTemplate(
 						"https://www.amazon.co.jp/gp/customer-reviews/{0}/ref=cm_cr_arp_d_rvw_ttl?ie=UTF8&ASIN={1}")
 				.cookies(
-						"[{\"domain\":\"www.amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"csm-hit\",\"value\":\"tb:s-HARKV38N2Y8Q4JAT4GEZ|1563934600882&t:1563934600933&adb:adblk_no\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"session-id\",\"value\":\"355-4638935-5954722\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"session-id-time\",\"value\":\"2082726001l\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"session-token\",\"value\":\"9T4yfPreoH7qgARa5UnjBYX9yFlqUlRda9Rr7s6Gr2dsmDLCSw3S3002zHF+BZQNM0RHdUHNRMiTuEgsadGwN5klD6wZrRaoPsyvd3DqbS9JukVQZqkqWRnyUVhQihTLGcyM+gxaJ/8hx96WXTYVckOq2QpTrnPFVXwlxTKoyUK8tKHrs8bL008aOgt507g07Fq3MrAaumGOeVuYhSj5rj+XMmXkxIsO5UwhlGRaUBx7G3vxfVvOVXLxC2Y3vXxa\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"ubid-acbjp\",\"value\":\"355-2051833-1471061\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"x-wl-uid\",\"value\":\"1C4C47T3gIVXaNHlmBvRQOrS233pu9QQ0W4YhDHCCawa3tW5mJMzypvZp2bWAESqaEiJcdk9C75w=\"}]")
+						"[{\"domain\":\"www.amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"csm-hit\",\"value\":\"tb:0RZX74KTHYJRYTMSEA5X+s-EK5R9DYBW991FNT6DMMF|1563970154201&t:1563970154201&adb:adblk_no\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"session-id\",\"value\":\"355-4638935-5954722\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"session-id-time\",\"value\":\"2082726001l\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"session-token\",\"value\":\"6Xa2HIY/P6KU4zjPQBTukCL4hhBO2INL4xSoTTBSzunZNkrOI9iAAfGKnGHYaQvKrjGUmWWmWWyzLVUD340Qzh2u2Yt2r/DneWlUNnO11+jOmA09jfYJujamjghg9uHz6/1kMVrlp3RafIK09ZLuu6QLGC7HBv2Y8ZMmkG10vF3xjeg/TKYrrkNfjN3vyUVy\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"ubid-acbjp\",\"value\":\"355-2051833-1471061\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"x-wl-uid\",\"value\":\"1C4C47T3gIVXaNHlmBvRQOrS233pu9QQ0W4YhDHCCawa3tW5mJMzypvZp2bWAESqaEiJcdk9C75w=\"},{\"domain\":\".amazon.co.jp\",\"path\":\"/\",\"secure\":true,\"name\":\"i18n-prefs\",\"value\":\"JPY\"}]")
 				.build();
 		countryMap.put(jp.getCountryCode(), jp);
 
 		CountryInfo au = CountryInfo.builder().countryCode("AU").authority("www.amazon.com.au").pageSize(20)
-				.reviewParserService("defaultAmazonReviewParseService").baseUrl("https://www.amazon.com.au/")
+				.reviewParserService("auAmazonReviewParseService").baseUrl("https://www.amazon.com.au/")
 				.reviewPageLinkTemplate(
 						"https://www.amazon.com.au/product-reviews/{0}/ref=cm_cr_getr_d_paging_btm_next_{1}?ie=UTF8&reviewerType=all_reviews&pageNumber={1}&pageSize={2}")
 				.reviewPathTemplate("/gp/customer-reviews/{0}/ref=cm_cr_arp_d_rvw_ttl?ie=UTF8&ASIN={1}")

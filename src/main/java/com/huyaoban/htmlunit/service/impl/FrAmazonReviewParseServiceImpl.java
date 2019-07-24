@@ -29,4 +29,12 @@ public class FrAmazonReviewParseServiceImpl extends DefaultAmazonReviewParseServ
 		}
 	}
 
+	@Override
+	public Integer parseTotalReviewCount(Element totalReviewCountElement) {
+		String totalReviewCountStr = totalReviewCountElement.text();
+		// 去掉千分位
+		totalReviewCountStr = totalReviewCountStr.replace(" ", "");
+		return Integer.valueOf(totalReviewCountStr);
+	}
+
 }

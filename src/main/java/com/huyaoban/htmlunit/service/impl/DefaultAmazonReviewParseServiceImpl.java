@@ -1,5 +1,7 @@
 package com.huyaoban.htmlunit.service.impl;
 
+import java.util.List;
+
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +48,15 @@ public class DefaultAmazonReviewParseServiceImpl implements AmazonReviewParseSer
 
 	@Override
 	public String parseCurrentStar(Element reviewInfoDiv) {
+		// <i data-hook="review-star-rating" class="a-icon a-icon-star a-star-1
+		// review-rating"><span class="a-icon-alt">5つ星のうち1.0</span></i>
 		Element currentStar = reviewInfoDiv.getElementsByClass("review-rating").first();
-		return currentStar.text();
+		String classes = currentStar.attr("class");
+		List<String> classList = Splitter.on(" ").trimResults().omitEmptyStrings().splitToList(classes);
+		String starClass = classList.stream().filter(e -> e.contains("a-star-")).findFirst().get();
+		List<String> stars = Splitter.on("-").trimResults().omitEmptyStrings().splitToList(starClass);
+
+		return stars.get(stars.size() - 1);
 	}
 
 	@Override
@@ -103,6 +112,14 @@ public class DefaultAmazonReviewParseServiceImpl implements AmazonReviewParseSer
 	public String parseReviewLink(Element reviewInfoDiv) {
 		Element title = reviewInfoDiv.selectFirst("a.review-title-content");
 		return title.attr("abs:href");
+	}
+
+	@Override
+	public Integer parseTotalReviewCount(Element totalReviewCountElement) {
+		String totalReviewCountStr = totalReviewCountElement.text();
+		// 去掉千分位
+		totalReviewCountStr = totalReviewCountStr.replace(",", "");
+		return Integer.valueOf(totalReviewCountStr);
 	}
 
 }

@@ -52,9 +52,9 @@ public class AmazonReviewCaptureServiceImpl implements AmazonReviewCaptureServic
 
 		// 获取review总数，并计算页数
 		Element totalReviewCountEle = doc.selectFirst("span.totalReviewCount");
-		String totalReviewCountStr = totalReviewCountEle.text();
-		totalReviewCountStr = totalReviewCountStr.replace(",", "");
-		Integer totalReviewCount = Integer.valueOf(totalReviewCountStr);
+		AmazonReviewParseService amazonReviewParseService = (AmazonReviewParseService) context
+				.getBean(countryInfo.getReviewParserService());
+		Integer totalReviewCount = amazonReviewParseService.parseTotalReviewCount(totalReviewCountEle);
 		Integer pageCount = totalReviewCount / countryInfo.getPageSize() + 1;
 
 		for (int pageNo = 1; pageNo <= pageCount; pageNo++) {

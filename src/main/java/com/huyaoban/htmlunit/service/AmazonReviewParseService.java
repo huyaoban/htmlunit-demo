@@ -8,6 +8,8 @@ public interface AmazonReviewParseService {
 
 	AmazonReview parseReviewInfo(String asin, Element reviewInfoDiv);
 
+	Integer parseTotalReviewCount(Element totalReviewCountElement);
+
 	String parseAmazonReviewId(Element reviewInfoDiv);
 
 	String parseCustomerName(Element reviewInfoDiv);

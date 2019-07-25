@@ -28,6 +28,7 @@ public final class WebClientUtil {
 		webClient.getOptions().setTimeout(28 * 1000);
 		webClient.getOptions().setUseInsecureSSL(true);
 		webClient.getOptions().setSSLInsecureProtocol("TLSv1.2");
+		webClient.getOptions().setDownloadImages(false);
 
 		webClient.setRefreshHandler(new ImmediateRefreshHandler());
 		webClient.setAjaxController(new NicelyResynchronizingAjaxController());// 很重要，设置支持AJAX

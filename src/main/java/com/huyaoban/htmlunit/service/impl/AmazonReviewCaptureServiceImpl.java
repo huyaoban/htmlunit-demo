@@ -1,5 +1,7 @@
 package com.huyaoban.htmlunit.service.impl;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -13,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.google.common.collect.Lists;
 import com.huyaoban.htmlunit.config.RabbitmqConfiguration;
 import com.huyaoban.htmlunit.model.AmazonReview;
@@ -85,13 +90,16 @@ public class AmazonReviewCaptureServiceImpl implements AmazonReviewCaptureServic
 	@Override
 	public void captureSingleReview(ReviewInfo reviewInfo) throws Exception {
 		CountryInfo countryInfo = CountryInfoUtil.getCountryInfo(reviewInfo.getCountryCode().toUpperCase());
-		WebClient webClient = WebClientUtil.buildWebClient(countryInfo);
+		WebClient webClient = WebClientUtil.buildWebClient();
 
 		String reviewPath = MessageFormat.format(countryInfo.getReviewPathTemplate(), reviewInfo.getReviewId(),
 				reviewInfo.getAsin());
+		String firstPageLink = MessageFormat.format(countryInfo.getReviewPageLinkTemplate(), reviewInfo.getAsin(), 1,
+				countryInfo.getPageSize());
 		webClient.addRequestHeader(":path", reviewPath);
+		webClient.addRequestHeader("referer", firstPageLink);
 
-		HtmlPage page = webClient.getPage(reviewInfo.getReviewLink());
+		HtmlPage page = webClient.getPage(buildSingleReviewRequest(reviewInfo, HttpMethod.GET));
 		parseReviewFromHtml(countryInfo, reviewInfo, page);
 
 		webClient.close();
@@ -143,6 +151,18 @@ public class AmazonReviewCaptureServiceImpl implements AmazonReviewCaptureServic
 		log.info("{}", amazonReview);
 
 		return amazonReview;
+	}
+
+	private WebRequest buildSingleReviewRequest(ReviewInfo reviewInfo, HttpMethod method) throws MalformedURLException {
+		WebRequest request = new WebRequest(new URL(reviewInfo.getReviewLink()), method);
+		List<NameValuePair> requestParameters = Lists.newArrayList();
+		NameValuePair pair1 = new NameValuePair("ie", "UTF8");
+		NameValuePair pair2 = new NameValuePair("ASIN", reviewInfo.getAsin());
+		requestParameters.add(pair1);
+		requestParameters.add(pair2);
+		request.setRequestParameters(requestParameters);
+
+		return request;
 	}
 
 }

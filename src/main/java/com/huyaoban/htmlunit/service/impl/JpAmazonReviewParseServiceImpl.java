@@ -26,7 +26,7 @@ public class JpAmazonReviewParseServiceImpl extends DefaultAmazonReviewParseServ
 
 		String votesStr = helpfulVotes.text();
 
-		String pattern = "^[1-9]*";
+		String pattern = "^[0-9]*";
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(votesStr);
 		if (m.find()) {

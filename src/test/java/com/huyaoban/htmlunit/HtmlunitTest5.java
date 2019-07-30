@@ -33,13 +33,13 @@ public class HtmlunitTest5 {
 
 	@Test
 	public void test1() throws InterruptedException {
-		ExecutorService service = Executors.newFixedThreadPool(30);
+		ExecutorService service = Executors.newFixedThreadPool(2);
 		List<WebClientTask> tasks = new ArrayList<WebClientTask>();
-		for (int i = 1; i <= 30; i++) {
+		for (int i = 1; i <= 2; i++) {
 			tasks.add(new WebClientTask(i));
 		}
 		service.invokeAll(tasks);
-		Assert.assertEquals(30, ids.size());
+		Assert.assertEquals(2, ids.size());
 	}
 
 	class WebClientTask implements Callable<Integer> {

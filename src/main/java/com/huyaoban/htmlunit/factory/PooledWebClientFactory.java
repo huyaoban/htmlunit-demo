@@ -7,6 +7,8 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ImmediateRefreshHandler;
@@ -14,19 +16,27 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlEmailInput;
+import com.gargoylesoftware.htmlunit.html.HtmlImage;
+import com.gargoylesoftware.htmlunit.html.HtmlListItem;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.util.Cookie;
+import com.huyaoban.htmlunit.service.VerificationCodeService;
 
+@Service
 public class PooledWebClientFactory extends BasePooledObjectFactory<WebClient> {
 	private static Logger logger = LoggerFactory.getLogger(PooledWebClientFactory.class);
+
+	@Autowired
+	private VerificationCodeService verificationCodeService;
 
 	@Override
 	public WebClient create() throws Exception {
 		WebClient webClient = new WebClient(BrowserVersion.CHROME);
 
-		webClient.getOptions().setJavaScriptEnabled(true);// 很重要，启用JS
+		webClient.getOptions().setJavaScriptEnabled(false);// 很重要，启用JS
 		webClient.getOptions().setThrowExceptionOnScriptError(false);// 当JS执行出错的时候是否抛出异常, 这里选择不需要
 		webClient.getOptions().setCssEnabled(false);// 是否启用CSS, 因为不需要展现页面, 所以不需要启用
 		webClient.getOptions().setRedirectEnabled(true);
@@ -44,82 +54,83 @@ public class PooledWebClientFactory extends BasePooledObjectFactory<WebClient> {
 		webClient.addRequestHeader("user-agent",
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36");
 
+		// 跳过短信验证码的cookie
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MONTH, 12);
 		webClient.getCookieManager()
 				.addCookie(new Cookie(".amazon.com", "sid",
-						"\"dy3NhllV8BnNxA7DRza8bw==|pdVDUvb2ft7dk7EyIM8HPZeY29tS6e8Bn8b8X7XAFkU=\"", "/",
+						"\"wxLbQZBEs0OksaLb1kGsmg==|AmE5pwX+q8BHWyFMrt13jlaUXwraypRfHrQy2+YF75o=\"", "/",
 						calendar.getTime(), true));
 		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "at-main",
-						"Atza|IwEBILnZpEKpHt9yVcYp3uZ7g0cillZUVDLPsaf3KImYEoC7xNhCkNRihyR1CNKX-4l_HJhSdWbk6Gjag2P4C-8NMiz_NB6P2F73wlVr-oxuACLSxUXrcEwLKqoFOtSFrpa3d2lApnnZ8VC3YFlgx0WE2IMQ6gvY30XlpV0-VIPELsLjYMIA772jKUvsQnYyfEyVR2lPiNjOYap-_2U367y1k_3a7Gvry_XU4OR4EE4BtMjULvw7PpOnkLcIR8TxMNNJjDfQ9e0mkRrG4TQJ-P7OHulEx0t_4yeXKQmTV-UydZYSd-lsdrqYKevnju7gExfUMzcQ0cAftQUSlDbjseDwCNOz2bDbRlUB4x7GDlVOthZXhwIfmSrn1bYiiDaSYBMw_KEXfmh-2v_2jUKLT79iy1BKt54ZOUb7lQi4jBLpXW11n6N8J4arUEf-uHDF2XXlVyJLgPZ0ypNN4lXdlH586UufBRuNL-ySny8XImZ8Vj1okg",
-						"/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie("sellercentral.amazon.com", "csm-hit",
-						"tb:KA7SM4G6DMP0JC6PXSF4+s-DTXEV63W4XM6YHJ5CVFA|1564474502573&t:1564474502573&adb:adblk_no",
-						"/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "i18n-prefs", "USD", "/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "sess-at-main", "\"R80/loJsK1Top42Gv7brQqodJxvnhU8Aaw/iNGCYWxg=\"",
-						"/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "session-id", "145-5160206-4615244", "/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "session-id-time", "2082787201l", "/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "session-token",
-						"\"Q4/S9GAq7hBwTduy+OmkfBtV46IUkeisU9Xy2U3cz/RL3bD3M/jl3n3kWeYplCDBqpk7vEWtlN+HhAm3yr5KVX4/EESP4U7QnbUXnoYCtqLiRhtBUCXEl4vHuIRtpe60TNy9QQY1fVE/LwyHHjCjcyQJeDSw8pNjuy5EB+jI/0pOgHA+Zhbp0uAMLw+ZByneHFMsm6n/b+DTBgdYUqaDmnnmP2YbjOf2xvxutAf/4G4=\"",
-						"/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "sp-cdn", "\"L5Z9:CN\"", "/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "sst-main",
-						"Sst1|PQEHlLXLSaE2kWNy8tLgsiFBC-8timsAT6UOAZMZOIYdTeIZMC5Co8wfOBzF42McD-klgwc2ZSe4F6ku1atGMZ2u4k2aGbZ3WHvxkeo_96YEOLR6GWQl0z1Az7gVVuABY95Lsf82B47voROjyUOl8lkmmLYiv12Oguh-X3KFUypaKSJKCiuPi99x7b3uj2I7GULBeqJqFQlsW5sKQ00FtJ-LWvzaeAn6hFLgJiAOhgRkgZW-fH01ywgxK1E9miAvLtk7i78QboaVaib06z7rUJZDqOldMMe84M7RAv3z9aEYcGurbPN8T7429eIS_uE-1uUcJ-1QpvuyRUK3wtq3cORknA",
-						"/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "ubid-main", "131-6044410-5413616", "/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "x-main",
-						"\"ambnGGMnh8fqwR?LzGTCHkhzOE0OHlyxXQE38UxdqH?5NlVgY?ZZtSfy4eENR?SY\"", "/",
-						calendar.getTime(), true));
-		webClient.getCookieManager()
-				.addCookie(new Cookie(".amazon.com", "x-wl-uid",
-						"1gemI3POPDKC3hcDATVVyerI2EHwNQBdnxpnUhrzLpTw1V8E1R0SjTZY0714PnxlWal9MWkgyvPk=", "/",
+				.addCookie(new Cookie("sellercentral.amazon.com", "sid",
+						"\"wxLbQZBEs0OksaLb1kGsmg==|AmE5pwX+q8BHWyFMrt13jlaUXwraypRfHrQy2+YF75o=\"", "/",
 						calendar.getTime(), true));
 
-		HtmlPage loginPage = webClient.getPage("https://sellercentral.amazon.com/gp/sign-in/sign-in.html");
-		logger.info("first title is {}", loginPage.getTitleText());
-		HtmlEmailInput usernameText = (HtmlEmailInput) loginPage.getElementById("ap_email");
-		usernameText.click();
-		usernameText.type("cs.txt.guest.dev@hotmail.com ");
+		String account = "cs.txt.guest.dev@hotmail.com";
+		String password = "suvalley2018";
 
-		HtmlPasswordInput pwdEle = (HtmlPasswordInput) loginPage.getElementById("ap_password");
-		pwdEle.click();
-		pwdEle.type("suvalley2018");
+		// 登陆结果标识
+		boolean success = false;
+		while (!success) {
+			// 登陆主页
+			HtmlPage loginPage = webClient.getPage("https://sellercentral.amazon.com/gp/sign-in/sign-in.html");
 
-		HtmlCheckBoxInput rememberMeEle = (HtmlCheckBoxInput) loginPage.getElementByName("rememberMe");
-		if (!rememberMeEle.isChecked()) {
-			rememberMeEle.setChecked(true);
-		}
+			// 账号
+			HtmlEmailInput usernameElement = (HtmlEmailInput) loginPage.getElementById("ap_email");
+			usernameElement.click();
+			usernameElement.type(account);
 
-		HtmlSubmitInput loginBtn = (HtmlSubmitInput) loginPage.getElementById("signInSubmit");
-		HtmlPage loginPageResult = loginBtn.click();
+			// 密码
+			HtmlPasswordInput passwordElement = (HtmlPasswordInput) loginPage.getElementById("ap_password");
+			passwordElement.click();
+			passwordElement.type(password);
 
-		logger.info("login title is {}", loginPageResult.getTitleText());
-		String loginXml = loginPageResult.asXml();
-		if (loginXml.toLowerCase().contains("Messages")) {
-			logger.info("login success");
+			// 记住我
+			HtmlCheckBoxInput rememberMeElement = (HtmlCheckBoxInput) loginPage.getElementByName("rememberMe");
+			if (!rememberMeElement.isChecked()) {
+				rememberMeElement.setChecked(true);
+			}
+
+			// 登陆按钮
+			HtmlSubmitInput loginBtn = (HtmlSubmitInput) loginPage.getElementById("signInSubmit");
+			HtmlPage loginResultPage = loginBtn.click();
+
+			// 校验登陆结果
+			if (isLoginSuccess(loginResultPage)) {
+				logger.info("{} login success", account);
+				success = true;
+				break;
+			}
+
+			// 图片验证码
+			HtmlImage captchaElement = (HtmlImage) loginResultPage.getElementById("auth-captcha-image");
+			if (captchaElement != null) {
+				// 图片链接
+				String captchaUrl = captchaElement.getAttribute("src");
+				// 调用接口识别图片验证码
+				String code = verificationCodeService.recognize(captchaUrl);
+				logger.info("recognized verifcation code is {}, image url {}", code, captchaUrl);
+
+				// 输入图片验证码
+				HtmlTextInput captchaText = (HtmlTextInput) loginResultPage.getElementById("auth-captcha-guess");
+				captchaText.setValueAttribute(code);
+
+				// 密码
+				passwordElement = (HtmlPasswordInput) loginResultPage.getElementById("ap_password");
+				passwordElement.click();
+				passwordElement.type(password);
+
+				// 登陆按钮
+				loginBtn = (HtmlSubmitInput) loginResultPage.getElementById("signInSubmit");
+				loginResultPage = loginBtn.click();
+
+				// 校验登陆结果
+				if (isLoginSuccess(loginResultPage)) {
+					logger.info("{} login success", account);
+					success = true;
+					break;
+				}
+			}
 		}
 
 		return webClient;
@@ -139,13 +150,36 @@ public class PooledWebClientFactory extends BasePooledObjectFactory<WebClient> {
 
 	@Override
 	public boolean validateObject(PooledObject<WebClient> p) {
+		WebClient client = p.getObject();
 
-		return super.validateObject(p);
+		HtmlPage homePage = null;
+		try {
+			homePage = client.getPage("https://sellercentral.amazon.com/gp/homepage.html/ref=xx_home_logo_xx");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return isLoginSuccess(homePage);
 	}
 
 	@Override
 	public void activateObject(PooledObject<WebClient> p) throws Exception {
 		super.activateObject(p);
+	}
+
+	private boolean isLoginSuccess(HtmlPage loginResultPage) {
+		HtmlListItem settingsElement = (HtmlListItem) loginResultPage.getElementById("sc-quicklink-settings");
+		if (settingsElement != null) {
+			return true;
+		}
+
+		HtmlListItem messagesElement = (HtmlListItem) loginResultPage.getElementById("sc-quicklink-messages");
+		if (messagesElement != null) {
+			return true;
+		}
+
+		return false;
 	}
 
 }

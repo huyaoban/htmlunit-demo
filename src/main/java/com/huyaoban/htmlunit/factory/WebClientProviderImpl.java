@@ -2,6 +2,7 @@ package com.huyaoban.htmlunit.factory;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -9,11 +10,13 @@ import com.gargoylesoftware.htmlunit.WebClient;
 @Service
 public class WebClientProviderImpl implements WebClientProvider, InitializingBean {
 
+	@Autowired
+	private PooledWebClientFactory factory;
+
 	private GenericObjectPool<WebClient> webClientPool;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		PooledWebClientFactory factory = new PooledWebClientFactory();
 		webClientPool = new GenericObjectPool<WebClient>(factory);
 
 		webClientPool.setTestOnBorrow(true);

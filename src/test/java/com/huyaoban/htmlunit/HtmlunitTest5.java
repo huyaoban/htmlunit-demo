@@ -1,5 +1,6 @@
 package com.huyaoban.htmlunit;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,8 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import com.huyaoban.htmlunit.factory.WebClientProvider;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +54,10 @@ public class HtmlunitTest5 {
 		@Override
 		public Integer call() throws Exception {
 			WebClient client = webClientProvider.getWebClient();
-			HtmlPage page = client.getPage("http://www.baidu.com");
-			Thread.sleep(10000);
+			Page feedbackPage = client.getPage(
+					"https://sellercentral.amazon.com/fbmapi/v1/feedbacks?pageNumber=1&pageSize=20&fromRating=1&toRating=5&sortBy=Date&descendingOrder=true&includePartiallySuppressed=true");
+			WebResponse resp = feedbackPage.getWebResponse();
+			log.info("{}", resp.getContentAsString(Charset.forName("UTF-8")));
 
 			webClientProvider.returnWebClient(client);
 			ids.add(id);

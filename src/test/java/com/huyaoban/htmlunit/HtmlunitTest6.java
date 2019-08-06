@@ -3,7 +3,6 @@ package com.huyaoban.htmlunit;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Calendar;
-import java.util.Scanner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlListItem;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTelInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.huyaoban.htmlunit.service.VerificationCodeService;
@@ -104,33 +102,6 @@ public class HtmlunitTest6 {
 				log.info("{} login success", account);
 				success = true;
 				break;
-			}
-
-			// 短信验证码
-			HtmlTelInput mobileCodeElement = (HtmlTelInput) loginResultPage.getElementById("auth-mfa-otpcode");
-			if (mobileCodeElement != null) {
-				System.out.println("请输入短信验证码");
-				Scanner sc = new Scanner(System.in);
-				String mobileCode = sc.nextLine();
-				mobileCodeElement.setValueAttribute(mobileCode);
-
-				// 记住设备
-				HtmlCheckBoxInput mobileRememberMeElement = (HtmlCheckBoxInput) loginResultPage
-						.getElementById("auth-mfa-remember-device");
-				if (!mobileRememberMeElement.isChecked()) {
-					mobileRememberMeElement.setChecked(true);
-				}
-
-				// 登陆按钮
-				loginBtn = (HtmlSubmitInput) loginResultPage.getElementById("auth-signin-button");
-				loginResultPage = loginBtn.click();
-
-				// 校验登陆结果
-				if (isLoginSuccess(loginResultPage)) {
-					log.info("{} login success", account);
-					success = true;
-					break;
-				}
 			}
 
 			// 图片验证码

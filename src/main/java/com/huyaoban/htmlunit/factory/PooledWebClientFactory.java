@@ -144,13 +144,18 @@ public class PooledWebClientFactory extends BasePooledObjectFactory<WebClient> {
 	@Override
 	public void destroyObject(PooledObject<WebClient> p) throws Exception {
 		WebClient client = p.getObject();
-		client.close();
+		if (client != null) {
+			client.close();
+		}
 		super.destroyObject(p);
 	}
 
 	@Override
 	public boolean validateObject(PooledObject<WebClient> p) {
 		WebClient client = p.getObject();
+		if (client == null) {
+			return false;
+		}
 
 		HtmlPage homePage = null;
 		try {

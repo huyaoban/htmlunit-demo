@@ -1,6 +1,5 @@
 package com.huyaoban.htmlunit;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
@@ -55,9 +57,19 @@ public class HtmlunitTest5 {
 		public Integer call() throws Exception {
 			WebClient client = webClientProvider.getWebClient();
 			Page feedbackPage = client.getPage(
-					"https://sellercentral.amazon.com/fbmapi/v1/feedbacks?pageNumber=1&pageSize=20&fromRating=1&toRating=5&sortBy=Date&descendingOrder=true&includePartiallySuppressed=true");
+					"https://sellercentral.amazon.com/fbmapi/v1/feedbacks?pageNumber=1&pageSize=50&fromRating=1&toRating=5&sortBy=Date&descendingOrder=true&includePartiallySuppressed=true");
 			WebResponse resp = feedbackPage.getWebResponse();
-			log.info("{}", resp.getContentAsString(Charset.forName("UTF-8")));
+			String feedbackList = resp.getContentAsString();
+			log.info("{}", feedbackList);
+
+			JSONObject jsonObj = JSON.parseObject(feedbackList);
+			JSONArray jsonArr = jsonObj.getJSONArray("feedbacks");
+			log.info("feedback total = {}", jsonArr.size());
+
+			Page feedbackAggregatePage = client
+					.getPage("https://sellercentral.amazon.com/fbmapi/v1/aggregates?duration=30D,90D,365D,LIFETIME");
+			resp = feedbackAggregatePage.getWebResponse();
+			log.info("{}", resp.getContentAsString());
 
 			webClientProvider.returnWebClient(client);
 			ids.add(id);

@@ -33,14 +33,14 @@ public class HtmlunitTest8 {
 		WebClient client = webClientProvider.getWebClient();
 
 		WebRequest req = new WebRequest(new URL(
-				"https://sellercentral.amazon.com/messaging/api/orders/114-5454255-5197835/contactBuyer?marketplaceId=ATVPDKIKX0DER&buyerId=&customerType=&isReturn=false&documentReferrer="));
+				"https://sellercentral.amazon.com/messaging/api/orders/111-7121530-7757804/contactBuyer?marketplaceId=ATVPDKIKX0DER&buyerId=&customerType=&isReturn=false&documentReferrer="));
 		req.setHttpMethod(HttpMethod.POST);
 		req.setAdditionalHeader("Content-Type", "application/json");
 		// 发送亚马逊站内信要带上这个请求头
 		req.setAdditionalHeader("X-Requested-With", "A01596255MPE0V36MRSF");
 
 		req.setRequestBody(
-				"{\"uploadingFiles\":[],\"failedFiles\":[],\"failedFilesTooLarge\":false,\"topicId\":\"6\",\"rawMessageBody\":\"foweufoewflajfjsofuew\",\"attachments\":[]}");
+				"{\"uploadingFiles\":[],\"failedFiles\":[],\"failedFilesTooLarge\":false,\"topicId\":\"6\",\"rawMessageBody\":\"99999foweufoewflajfjsofuew77777\",\"attachments\":[]}");
 
 		Page amazonMsgPage = client.getPage(req);
 		WebResponse resp = amazonMsgPage.getWebResponse();

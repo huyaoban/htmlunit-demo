@@ -1,5 +1,7 @@
 package com.huyaoban.htmlunit;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -87,6 +89,22 @@ public class HtmlunitTest3 {
 		DateTimeFormatter dtf = DateTimeFormat.forPattern("MMM d, yyyy").withLocale(Locale.CANADA);
 		LocalDate ld = LocalDate.parse(d, dtf);
 		Date reviewDate = ld.toDate();
+	}
+
+	@Test
+	public void test10() throws ParseException {
+		String feedbackDate = "2019-08-16T15:02:25.020Z";
+
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		Date d = format1.parse(feedbackDate);
+		// Date d = format.parse(feedbackDate.replace("Z", " UTC"));
+		System.out.println("to date = " + d);
+
+		String feedbackDate1 = "2019-08-16T15:02:25Z";
+		SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		Date d1 = format2.parse(feedbackDate1);
+		// Date d = format.parse(feedbackDate.replace("Z", " UTC"));
+		System.out.println("to date = " + d1);
 	}
 
 }
